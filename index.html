@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="files/style.css">
+</head>
+
+<body>
+    <h2></h2>
+    <div class="game">
+        <div class="main">
+            <div class="tries">
+            </div>
+            <div class="btns">
+                <button class="check">Check</button>
+                <button class="hint">Hint(<span class="hinto"></span>)</button>
+            </div>
+        </div>
+        <div class="guide">
+            <div class="color">
+                <span class="lon awal"></span>
+                <p>Right in place</p>
+            </div>
+            <div class="color">
+                <span class="lon tany"></span>
+                <p>Right not in place</p>
+            </div>
+            <div class="color">
+                <span class="lon talet"></span>
+                <p>Wrong letter</p>
+            </div>
+            <div class="discription">
+                There will be a random word and you will try to guess what is it within some numbers of tries,
+                you can press enter instade of check button
+            </div>
+        </div>
+    </div>
+    <div class="result">
+        <p>
+        <div class="msg"></div>
+        <h3>The word was "<span class="fin"></span>"</h3>
+        </p>
+        <button class="restart">Restart</button>
+    </div>
+    <div class="container">
+        <audio controls class="foz" style="display: none;">
+            <source src="./files/halawade.mp3" type="audio/mp3">
+        </audio>
+        <audio controls class="mshfoz" style="display: none;">
+            <source src="./files/lehbs.mp3" type="audio/mp3">
+        </audio>
+    </div>
+    <script src="files/main.js"></script>
+</body>
+
+</html>
