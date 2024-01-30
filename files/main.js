@@ -13,7 +13,7 @@ let arrOfWords = [
     'flask', 'quick', 'frost', 'queen', 'broom',
     'frost', 'heart', 'orbit', 'snore', 'laugh',
     'blade', 'frost', 'snail', 'storm', 'peach',
-    'power', 'crash', 'olive', 'stone',
+    'power', 'crash', 'olive', 'stone', "brain",
     'fairy', 'dream', 'shade', 'tiger', 'slice',
     'blaze', 'maple', 'swirl', 'brush', 'sweet',
     'blood', 'creek', 'spicy', 'bloom',
@@ -92,14 +92,14 @@ function doit() {
                     if (tryInputs[index + 1] && tryInputs[index + 1].disabled === false) {
                         input.blur()
                         tryInputs[index + 1].focus()
-                    } else if (tryInputs[index + 1].disabled === true &&
-                        tryInputs[index + 2].disabled === false &&
-                        tryInputs[index + 2]) {
+                    } else if (tryInputs[index + 2] &&
+                        tryInputs[index + 1].disabled === true &&
+                        tryInputs[index + 2].disabled === false) {
                         input.blur()
                         tryInputs[index + 2].focus()
-                    } else if (tryInputs[index + 1].disabled === true &&
-                        tryInputs[index + 2].disabled === true &&
-                        tryInputs[index + 3]) {
+                    } else if (tryInputs[index + 3] &&
+                        tryInputs[index + 1].disabled === true &&
+                        tryInputs[index + 2].disabled === true) {
                         input.blur()
                         tryInputs[index + 3].focus()
                     }
@@ -136,17 +136,16 @@ function doit() {
     })
 }
 doit()
-
 checkbtn.onclick = function () {
 
     currentInputs = document.querySelectorAll(`.try-${currentTry} input`)
     // console.log(currentInputs)
     let count = 0
     currentInputs.forEach((input, index) => {
-        if (input.value === wordToGeuss[index]) {
+        if (input.value.toLowerCase() === wordToGeuss[index]) {
             input.classList.add("rip")
             count += 1
-        } else if (wordToGeuss.includes(input.value) && input.value !== "") {
+        } else if (wordToGeuss.includes(input.value.toLowerCase()) && input.value !== "") {
             input.classList.add("rnp")
             final = false
         } else {
