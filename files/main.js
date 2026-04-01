@@ -1,214 +1,281 @@
-// game name
-let gameName = "Geuss the word"
-document.querySelector("title").innerHTML = gameName
-document.querySelector("h2").innerHTML = gameName
+// ==================== GAME SETUP ====================
 
-// word to geuss
-let arrOfWords = [
+const GAME_NAME = "Guess the Word"
+const NUMBER_OF_TRIES = 5
+const NUMBER_OF_LETTERS = 5
+const NUMBER_OF_HINTS = 2
+
+// Set game title
+document.querySelector("title").innerHTML = GAME_NAME
+document.querySelector("h2").innerHTML = GAME_NAME
+
+// ==================== WORD SELECTION ====================
+
+const arrOfWords = [
     'apple', 'ocean', 'chair', 'green', 'music',
     'happy', 'stone', 'cloud', 'laugh', 'brush',
     'beach', 'dance', 'smile', 'river', 'bread',
     'honey', 'grape', 'radio', 'lucky', 'watch',
     'light', 'sleep', 'water', 'sound', 'spicy',
     'flask', 'quick', 'frost', 'queen', 'broom',
-    'frost', 'heart', 'orbit', 'snore', 'laugh',
-    'blade', 'frost', 'snail', 'storm', 'peach',
-    'power', 'crash', 'olive', 'stone', "brain",
-    'fairy', 'dream', 'shade', 'tiger', 'slice',
-    'blaze', 'maple', 'swirl', 'brush', 'sweet',
-    'blood', 'creek', 'spicy', 'bloom',
-    'snore', 'orbit', 'radio', 'queen',
-    'heart', 'laugh', 'crash', 'storm',
-    'dream', 'tiger', 'peach', 'blaze', 'olive',
-    'snail', 'stone', 'fairy', 'shade', 'slice',
-    'spicy', 'dream', 'tiger', 'blaze',
-    'queen', 'olive',
-    'crash', 'heart', 'stone', 'laugh'
-];
-let index = Math.floor(Math.random() * arrOfWords.length)
-let wordToGeuss = arrOfWords[index]
-console.log(wordToGeuss)
+    'heart', 'orbit', 'snore', 'blade', 'snail',
+    'storm', 'peach', 'power', 'crash', 'olive',
+    'brain', 'fairy', 'dream', 'shade', 'tiger',
+    'slice', 'blaze', 'maple', 'swirl', 'sweet',
+    'blood', 'creek', 'bloom', 'think', 'drink',
+    'plant', 'truck', 'bring', 'field', 'sword',
+    'mango', 'lemon', 'berry', 'melon', 'grape',
+    'pizza', 'bread', 'pasta', 'sauce', 'cream',
+    'flame', 'spark', 'flash', 'crack', 'shock',
+    'steam', 'swamp', 'marsh', 'drown', 'float',
+    'wings', 'spark', 'glaze', 'glow', 'shine',
+    'twine', 'spine', 'prime', 'crime', 'grime',
+    'prism', 'chasm', 'spasm', 'smart', 'craft',
+    'draft', 'shelf', 'dwarf', 'staff', 'stuff',
+    'trust', 'trust', 'ghost', 'beast', 'feast',
+    'yeast', 'coast', 'roast', 'toast', 'boast',
+    'blast', 'frost', 'crust', 'trust', 'burst',
+    'worst', 'first', 'birth', 'earth', 'worth',
+    'north', 'forth', 'cloth', 'broth', 'froth',
+    'truth', 'youth', 'mouth', 'south', 'route',
+    'shout', 'about', 'doubt', 'scout', 'snout',
+    'stout', 'trout', 'grout', 'shred', 'bread',
+    'dread', 'tread', 'stead', 'stead', 'braid',
+    'afraid', 'avoid', 'blend', 'spend', 'trend',
+    'friend', 'sound', 'found', 'bound', 'round',
+    'wound', 'grand', 'brand', 'stand', 'strand',
+    'gland', 'bland', 'piano', 'radio', 'ratio',
+    'patio', 'attic', 'panic', 'magic', 'sonic',
+    'toxic', 'topic', 'comic', 'basic', 'logic',
+    'cubic', 'civic', 'ethic', 'relic', 'epic'
+]
 
-// create the inputs
-let numberOfTries = 5
-let numberOfLetters = 5
-let father = document.querySelector(".tries")
+// Select random word
+const randomIndex = Math.floor(Math.random() * arrOfWords.length)
+const wordToGuess = arrOfWords[randomIndex].toLowerCase()
+console.log('Word to guess:', wordToGuess)
 
-let generateInputs = function () {
-    for (let i = 1; i <= numberOfTries; i++) {
-        let div = document.createElement("div")
-        div.classList.add(`try-${i}`)
-        let span = document.createElement("span")
-        let spantxt = document.createTextNode(`try ${i}`)
-        span.appendChild(spantxt)
-        div.appendChild(span)
-        for (let j = 1; j <= numberOfLetters; j++) {
-            let input = document.createElement("input")
+// ==================== DOM ELEMENTS ====================
+
+const gameTriesContainer = document.querySelector(".tries")
+const checkButton = document.querySelector(".check")
+const hintButton = document.querySelector(".hint")
+const hintCounter = document.querySelector(".hinto")
+const resultContainer = document.querySelector(".result")
+const resultMessage = document.querySelector(".msg")
+const resultWord = document.querySelector(".fin")
+const restartButton = document.querySelector(".restart")
+const winSound = document.querySelector(".foz")
+const lossSound = document.querySelector(".mshfoz")
+
+// ==================== GAME STATE ====================
+
+let currentTry = 1
+let isGameOver = false
+let hasWon = false
+let numberOfHintsRemaining = NUMBER_OF_HINTS
+
+// Set initial values
+resultWord.innerHTML = wordToGuess
+hintCounter.innerHTML = numberOfHintsRemaining
+resultContainer.style.display = "none"
+
+// ==================== INPUT GENERATION ====================
+
+function generateInputs() {
+    for (let i = 1; i <= NUMBER_OF_TRIES; i++) {
+        const tryDiv = document.createElement("div")
+        tryDiv.classList.add(`try-${i}`)
+
+        const tryLabel = document.createElement("span")
+        tryLabel.textContent = `Try ${i}`
+        tryDiv.appendChild(tryLabel)
+
+        for (let j = 1; j <= NUMBER_OF_LETTERS; j++) {
+            const input = document.createElement("input")
             input.classList.add("letter")
             input.classList.add(`try-${i}-letter-${j}`)
             input.maxLength = 1
             input.type = "text"
-            div.appendChild(input)
+            input.inputMode = "latin"
+            input.disabled = true
+
+            tryDiv.appendChild(input)
         }
-        father.appendChild(div)
+
+        gameTriesContainer.appendChild(tryDiv)
     }
 }
-window.onload = generateInputs()
 
-//dealing wiht inputs and buttons
-let final = true
-
-let checkbtn = document.querySelector(".check")
-
-let divs = document.querySelectorAll(".tries div")
-let inputs = document.querySelectorAll("input")
-let currentTry = 1;
-
-let win = document.querySelector(".foz")
-let loss = document.querySelector(".mshfoz")
-
-let result = document.querySelector(".result")
-result.style.display = "none"
-let msg = document.querySelector(".msg")
-let fin = document.querySelector(".fin")
-fin.innerHTML = wordToGeuss
-let restart = document.querySelector(".restart")
-restart.onclick = function () {
-    location.reload()
-}
-
-inputs.forEach((input) => {
-    input.disabled = true
+window.addEventListener('DOMContentLoaded', () => {
+    generateInputs()
+    enableCurrentTry()
 })
 
-function doit() {
-    divs.forEach((div) => {
-        let tryInputs = document.querySelectorAll(`.try-${currentTry} input`)
-        if ((div.classList.contains(`try-${currentTry}`))) {
-            tryInputs.forEach((input, index) => {
-                input.disabled = false
-                tryInputs[0].focus()
-                input.oninput = function () {
-                    if (tryInputs[index + 1] && tryInputs[index + 1].disabled === false) {
-                        input.blur()
-                        tryInputs[index + 1].focus()
-                    } else if (tryInputs[index + 2] &&
-                        tryInputs[index + 1].disabled === true &&
-                        tryInputs[index + 2].disabled === false) {
-                        input.blur()
-                        tryInputs[index + 2].focus()
-                    } else if (tryInputs[index + 3] &&
-                        tryInputs[index + 1].disabled === true &&
-                        tryInputs[index + 2].disabled === true) {
-                        input.blur()
-                        tryInputs[index + 3].focus()
+// ==================== INPUT KEYBOARD NAVIGATION ====================
+
+function enableCurrentTry() {
+    const inputs = document.querySelectorAll(`.try-${currentTry} input`)
+
+    inputs.forEach((input, index) => {
+        input.disabled = false
+
+        // Auto-focus on first input
+        if (index === 0) {
+            input.focus()
+        }
+
+        // Handle input event - auto advance to next input
+        input.addEventListener('input', (e) => {
+            e.target.value = e.target.value.toLowerCase()
+
+            if (e.target.value.length > 0) {
+                findNextEnabledInput(inputs, index)?.focus()
+            }
+        })
+
+        // Handle keyboard navigation
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                findPreviousEnabledInput(inputs, index)?.focus()
+            } else if (e.key === 'ArrowRight') {
+                findNextEnabledInput(inputs, index)?.focus()
+            } else if (e.key === 'Backspace') {
+                if (input.value === '') {
+                    const prev = findPreviousEnabledInput(inputs, index)
+                    if (prev) {
+                        prev.value = ''
+                        prev.focus()
                     }
                 }
-                input.addEventListener("keydown", (event) => {
-                    // console.log(event.key)
-                    if (event.key === "ArrowLeft") {
-                        if (tryInputs[index - 1] && tryInputs[index - 1].disabled === false) {
-                            tryInputs[index - 1].focus()
-                        } else if (tryInputs[index - 2] && tryInputs[index - 2].disabled === false) {
-                            tryInputs[index - 2].focus()
-                        } else if (tryInputs[index - 3] && tryInputs[index - 3].disabled === false) {
-                            tryInputs[index - 3].focus()
-                        }
-                    } else if (event.key === "ArrowRight") {
-                        if (tryInputs[index + 1] && tryInputs[index + 1].disabled === false) {
-                            tryInputs[index + 1].focus()
-                        } else if (tryInputs[index + 2] && tryInputs[index + 2].disabled === false) {
-                            tryInputs[index + 2].focus()
-                        } else if (tryInputs[index + 3] && tryInputs[index + 3].disabled === false) {
-                            tryInputs[index + 3].focus()
-                        }
-                    } else if (event.key === "Backspace") {
-                        if (input.value !== "") {
-                            input.value = ""
-                        } else if (tryInputs[index - 1] && tryInputs[index - 1].disabled == false) {
-                            tryInputs[index - 1].value = ""
-                            tryInputs[index - 1].focus()
-                        }
-                    }
-                })
-            })
-        }
+            }
+        })
+
+        // Only accept letters
+        input.addEventListener('keypress', (e) => {
+            if (!/[a-z]/i.test(e.key)) {
+                e.preventDefault()
+            }
+        })
     })
 }
-doit()
-checkbtn.onclick = function () {
 
-    currentInputs = document.querySelectorAll(`.try-${currentTry} input`)
-    // console.log(currentInputs)
-    let count = 0
+function findNextEnabledInput(inputs, currentIndex) {
+    for (let i = currentIndex + 1; i < inputs.length; i++) {
+        if (!inputs[i].disabled) {
+            return inputs[i]
+        }
+    }
+    return null
+}
+
+function findPreviousEnabledInput(inputs, currentIndex) {
+    for (let i = currentIndex - 1; i >= 0; i--) {
+        if (!inputs[i].disabled) {
+            return inputs[i]
+        }
+    }
+    return null
+}
+
+// ==================== GAME CHECK LOGIC ====================
+
+function checkWord() {
+    if (isGameOver) return
+
+    const currentInputs = document.querySelectorAll(`.try-${currentTry} input`)
+    let correctCount = 0
+    const guessedWord = Array.from(currentInputs).map(input => input.value.toLowerCase()).join('')
+
+    // Validate input
+    if (guessedWord.length < NUMBER_OF_LETTERS) {
+        alert('Please fill all letters!')
+        return
+    }
+
+    // Check each letter
     currentInputs.forEach((input, index) => {
-        if (input.value.toLowerCase() === wordToGeuss[index]) {
-            input.classList.add("rip")
-            count += 1
-        } else if (wordToGeuss.includes(input.value.toLowerCase()) && input.value !== "") {
-            input.classList.add("rnp")
-            final = false
-        } else {
-            input.classList.add("wib")
-            final = false
-        }
         input.disabled = true
-        input.style.color = "white"
-    })
-    if (count === numberOfLetters) {
-        final = true
-    }
 
-    // manage win
-    if (final) {
-        msg.innerHTML = "You win"
-        result.style.display = "block"
-        result.style.animation = "spin .3s 1 forwards linear"
-        win.play()
-    } else {
-        // manage loss
-        if (currentTry === 5) {
-            msg.innerHTML = "You lost"
-            result.style.display = "block"
-            result.style.animation = "spin .3s 1 forwards linear"
-            loss.play()
+        const letter = input.value.toLowerCase()
+        const correctLetter = wordToGuess[index]
+
+        if (letter === correctLetter) {
+            input.classList.add('rip')
+            correctCount++
+        } else if (wordToGuess.includes(letter)) {
+            input.classList.add('rnp')
+        } else {
+            input.classList.add('wib')
         }
-        currentTry += 1
-        doit()
+    })
+
+    // Check win condition
+    if (correctCount === NUMBER_OF_LETTERS) {
+        endGame(true)
+    } else if (currentTry < NUMBER_OF_TRIES) {
+        currentTry++
+        setTimeout(() => enableCurrentTry(), 300)
+    } else {
+        endGame(false)
     }
 }
-// make enter do the check btn
-document.body.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-        checkbtn.click()
+
+function endGame(won) {
+    isGameOver = true
+    hasWon = won
+
+    // Disable all inputs
+    document.querySelectorAll('input').forEach(input => {
+        input.disabled = true
+    })
+
+    // Show result
+    resultContainer.style.display = 'block'
+
+    if (won) {
+        resultMessage.innerHTML = '🎉 You Won!'
+        winSound.play().catch(err => console.log('Audio play error:', err))
+    } else {
+        resultMessage.innerHTML = '😔 You Lost!'
+        lossSound.play().catch(err => console.log('Audio play error:', err))
+    }
+}
+
+// ==================== HINTS ====================
+
+function giveHint() {
+    if (isGameOver) return
+
+    if (numberOfHintsRemaining > 0) {
+        numberOfHintsRemaining--
+        hintCounter.innerHTML = numberOfHintsRemaining
+
+        const currentInputs = document.querySelectorAll(`.try-${currentTry} input`)
+        let randomIndex = Math.floor(Math.random() * wordToGuess.length)
+        let inputToFill = currentInputs[randomIndex]
+
+        // Find an enabled input
+        while (inputToFill.disabled) {
+            randomIndex = Math.floor(Math.random() * wordToGuess.length)
+            inputToFill = currentInputs[randomIndex]
+        }
+
+        inputToFill.value = wordToGuess[randomIndex]
+        inputToFill.classList.add('rip')
+        inputToFill.disabled = true
+    }
+}
+
+// ==================== EVENT LISTENERS ====================
+
+checkButton.addEventListener('click', checkWord)
+hintButton.addEventListener('click', giveHint)
+restartButton.addEventListener('click', () => location.reload())
+
+// Enter key triggers check
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !isGameOver) {
+        checkWord()
     }
 })
-// hints
-let numberOfHints = 2
-
-let hintbtn = document.querySelector(".hint")
-let hinto = document.querySelector(".hinto")
-hinto.innerHTML = numberOfHints
-hinto.style.color = "#00950b"
-hintbtn.onclick = function () {
-    if (numberOfHints > 0) {
-        numberOfHints -= 1;
-        hinto.innerHTML = numberOfHints
-        let randomIndex = Math.floor(Math.random() * wordToGeuss.length)
-        let randomLetter = wordToGeuss[randomIndex]
-        let inputToFill = document.querySelector(`.try-${currentTry}-letter-${randomIndex + 1}`)
-        while (true) {
-            if (inputToFill.disabled == true) {
-                randomIndex = Math.floor(Math.random() * wordToGeuss.length)
-                randomLetter = wordToGeuss[randomIndex]
-                inputToFill = document.querySelector(`.try-${currentTry}-letter-${randomIndex + 1}`)
-            } else {
-                break;
-            }
-        }
-        inputToFill.value = randomLetter
-        inputToFill.classList.add("rip")
-        inputToFill.disabled = true
-        inputToFill.style.color = "white"
-    }
-}
